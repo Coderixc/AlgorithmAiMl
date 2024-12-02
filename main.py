@@ -1,7 +1,8 @@
 import DataGenerator.OHLCGenerator as Fd  #finance data
+import SVM
 
 
-def ConsoleModel():
+def ConsoleModel(df):
     try:
         #__prompt="Chosse Model"
 
@@ -13,6 +14,8 @@ def ConsoleModel():
         algorithmMapping = int(input())
         if algorithmMapping==1:
             print("Selected SVM Model..")
+            svm_model = SVM.SVM(df)
+            svm_model.Run()
 
     except Exception as e:
         print(F"Error Occured..{e}")
@@ -24,10 +27,8 @@ if __name__ == '__main__':
     # Generate stock data with custom parameters and a start date
     stock_gen.TuneMyData(StartingPrice=150, Variance=0.02, Runif=1000, start_date='2020-02-01')
 
-    # Display the generated OHLC stock data with the Date column
-    print(stock_gen.GetOHLCData())
 
-    ConsoleModel()
+    ConsoleModel(stock_gen.GetOHLCData())
 
 
 

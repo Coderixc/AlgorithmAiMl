@@ -1,3 +1,5 @@
+from sklearn.metrics import accuracy_score, mean_squared_error
+
 import DataGenerator.OHLCGenerator as Fd
 import pandas as pd
 from sklearn.svm import SVC, SVR
@@ -65,3 +67,42 @@ class SVM():
         X = df[['Open', 'High', 'Low', 'MA5', 'MA10']]  #as dataframe
         y = df['Direction']  #as series
         return train_test_split(X, y, test_size=0.2, random_state=42)
+
+    def train(self, X_train, y_train):
+        """
+        Train the SVM model.
+        """
+        self.model.fit(X_train, y_train)
+
+    def evaluate(self, X_test, y_test):
+        """
+        Evaluate the SVM model.
+        """
+        predictions = self.model.predict(X_test)
+        if isinstance(self.model, SVC):
+            accuracy = accuracy_score(y_test, predictions)
+            print(f"Model Accuracy: {accuracy:.2f}")
+            return accuracy
+        elif isinstance(self.model, SVR):
+            rmse = mean_squared_error(y_test, predictions, squared=False)
+            print(f"Model RMSE: {rmse:.2f}")
+            return rmse
+
+    def predict(self, X):
+        """
+        Make predictions using the trained model.
+        """
+        return self.model.predict(X)
+
+    def Run(self):
+        X_train, X_test, y_train, y_test = self.Preprocess()
+
+        # Step 4: Train Model
+        self.train(X_train, y_train)
+
+        # Step 5: Evaluate Model
+        self.evaluate(X_test, y_test)
+
+        # Step 6: Predict Future Values
+        predictions = self.predict(X_test)
+        print("Predictions:", predictions)
