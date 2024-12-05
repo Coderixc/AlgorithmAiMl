@@ -1,3 +1,4 @@
+from cachetools import func
 from sklearn.metrics import accuracy_score, mean_squared_error
 
 import DataGenerator.OHLCGenerator as Fd
@@ -95,14 +96,18 @@ class SVM():
         return self.model.predict(X)
 
     def Run(self):
-        X_train, X_test, y_train, y_test = self.Preprocess()
+        try:
+            X_train, X_test, y_train, y_test = self.Preprocess()
 
-        # Step 4: Train Model
-        self.train(X_train, y_train)
+            # Train SVM model without scaling
+            svm_model = SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42)
+            svm_model.fit(X_train, y_train)
 
-        # Step 5: Evaluate Model
-        self.evaluate(X_test, y_test)
+            y_pred = svm_model.predict(X_test)
 
-        # Step 6: Predict Future Values
-        predictions = self.predict(X_test)
-        print("Predictions:", predictions)
+            # Evaluate
+            print("Accuracy:", accuracy_score(y_test, y_pred))
+
+
+        except Exception as e:
+            print(F"Error Occured {e}")
