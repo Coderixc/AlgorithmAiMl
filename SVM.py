@@ -3,6 +3,7 @@ from sklearn.metrics import accuracy_score, mean_squared_error
 
 import DataGenerator.OHLCGenerator as Fd
 import pandas as pd
+from  sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC, SVR
 
 from sklearn.model_selection import train_test_split
@@ -102,13 +103,25 @@ class SVM(baseAI.BaseAIModel):
         Make predictions using the trained model.
         """
         return self.model.predict(X)
+    def ModelSelection(self,X_train,y_train):
+        param_grid= {
+            "C": [0.1,1,10],
+            'gamma': [1,0.1,0.01],
+            'kernel':[KernelFunc.RBF, KernelFunc.LINEAR]
+        }
+        grid = GridSearchCV(SVC(), param_grid,refit=True,verbose=2 )
+        grid.fit(X_train,y_train)
+        print("Best Parameters:", grid.best_params_)
 
-    def Run(self ):
+
+    def Run(self , HyperParamater = False ):
         try:
             X_train, X_test, y_train, y_test = self.Preprocess()
             self.model = SVC(kernel=self.__kernel)
             self.train(X_train, y_train)
             self.evaluate(X_test,y_test)
+            if HyperParamater == True:
+                self.ModelSelection(X_train,y_train)
 
         except Exception as e:
             print(F"Error Occured {e}")
