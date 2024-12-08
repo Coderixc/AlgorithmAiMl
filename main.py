@@ -10,11 +10,10 @@ def ConsoleModel(df):
         print("Press 1 : SVM")
         print("Press ii : SVM")
 
-
         algorithmMapping = int(input())
         if algorithmMapping==1:
             print("Selected SVM Model..")
-            svm_model = SVM.SVM(df)
+            svm_model = SVM.SVM(df,kernel=SVM.KernelFunc.LINEAR)
             svm_model.Run()
 
     except Exception as e:
@@ -25,7 +24,7 @@ if __name__ == '__main__':
     stock_gen = Fd.StockDataGenerator()
 
     # Generate stock data with custom parameters and a start date
-    stock_gen.TuneMyData(StartingPrice=150, Variance=0.02, Runif=1000, start_date='2020-02-01')
+    stock_gen.TuneMyData(StartingPrice=150, Variance=0.02, Runif=6000, start_date='2000-02-01')
 
 
     ConsoleModel(stock_gen.GetOHLCData())

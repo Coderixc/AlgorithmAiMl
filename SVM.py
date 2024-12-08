@@ -1,4 +1,4 @@
-from cachetools import func
+
 from sklearn.metrics import accuracy_score, mean_squared_error
 
 import DataGenerator.OHLCGenerator as Fd
@@ -6,9 +6,16 @@ import pandas as pd
 from sklearn.svm import SVC, SVR
 
 from sklearn.model_selection import train_test_split
+import BaseAIModel as baseAI
 
-#https://chatgpt.com/c/674c89be-9040-8011-b7dc-0aecdee08435
-class SVM():
+class KernelFunc:
+    LINEAR = "linear"
+    POLY = "poly"
+    RBF = "rbf"
+    SIGMOID = "sigmoid"
+    PRECOMPUTED = "precomputed"
+
+class SVM(baseAI.BaseAIModel):
     """
     Support Vector Machines (SVM) are supervised learning models
     Used - classification and regression problems.
@@ -23,15 +30,23 @@ class SVM():
     SVM maximizes this margin.
 
     Distance between Margin and Huperplane : we use Euclidean distance
-
     """
 
-    def __init__(self,df_OHLC: pd.DataFrame):
+    def __init__(self,df_OHLC: pd.DataFrame, kernel= KernelFunc.LINEAR):
         # Validate df is a Pandas DataFrame
         if not isinstance(df_OHLC, pd.DataFrame):
             raise TypeError("Input 'df' must be a pandas DataFrame.")
-
         self.df= df_OHLC
+
+        if kernel == KernelFunc.LINEAR:
+            self.__kernel = KernelFunc.LINEAR
+        elif kernel == KernelFunc.RBF:
+            self.__kernel = KernelFunc.RBF
+        elif kernel == KernelFunc.POLY:
+            self.__kernel = KernelFunc.POLY
+        elif kernel == KernelFunc.PRECOMPUTED:
+            self.__kernel = KernelFunc.PRECOMPUTED
+
 
     def Preprocess(self):
         """
@@ -43,17 +58,13 @@ class SVM():
         - Trading Indicator : MA(5) and MA(10)
         """
         df = self.df.copy(deep= True)  #deep = data(independent) + structure
-
         #add a 'Return' column as daily return
         df['Return'] = df['Close'].pct_change()
-
         #calculate Direction using True(1) , False(0) , Converting Boolean to int using astype(int)
         df['Direction'] = (df['Return'] > 0).astype(int)
-
         df['MA5'] = df['Close'].rolling(window=5).mean()
         df['MA10'] = df['Close'].rolling(window=10).mean()
         df = df.dropna()
-
         if len(df) <=0:
             print("No Data")
             return
@@ -70,16 +81,13 @@ class SVM():
         return train_test_split(X, y, test_size=0.2, random_state=42)
 
     def train(self, X_train, y_train):
-        """
-        Train the SVM model.
-        """
         self.model.fit(X_train, y_train)
 
     def evaluate(self, X_test, y_test):
         """
         Evaluate the SVM model.
         """
-        predictions = self.model.predict(X_test)
+        predictions = self.predictModel(X_test)
         if isinstance(self.model, SVC):
             accuracy = accuracy_score(y_test, predictions)
             print(f"Model Accuracy: {accuracy:.2f}")
@@ -89,25 +97,18 @@ class SVM():
             print(f"Model RMSE: {rmse:.2f}")
             return rmse
 
-    def predict(self, X):
+    def predictModel(self, X):
         """
         Make predictions using the trained model.
         """
         return self.model.predict(X)
 
-    def Run(self):
+    def Run(self ):
         try:
             X_train, X_test, y_train, y_test = self.Preprocess()
-
-            # Train SVM model without scaling
-            svm_model = SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42)
-            svm_model.fit(X_train, y_train)
-
-            y_pred = svm_model.predict(X_test)
-
-            # Evaluate
-            print("Accuracy:", accuracy_score(y_test, y_pred))
-
+            self.model = SVC(kernel=self.__kernel)
+            self.train(X_train, y_train)
+            self.evaluate(X_test,y_test)
 
         except Exception as e:
             print(F"Error Occured {e}")
