@@ -32,7 +32,6 @@ class SVM(baseAI.BaseAIModel):
 
     Distance between Margin and Huperplane : we use Euclidean distance
     """
-
     def __init__(self,df_OHLC: pd.DataFrame, kernel= KernelFunc.LINEAR):
         # Validate df is a Pandas DataFrame
         if not isinstance(df_OHLC, pd.DataFrame):
@@ -47,7 +46,6 @@ class SVM(baseAI.BaseAIModel):
             self.__kernel = KernelFunc.POLY
         elif kernel == KernelFunc.PRECOMPUTED:
             self.__kernel = KernelFunc.PRECOMPUTED
-
 
     def Preprocess(self):
         """
@@ -103,6 +101,7 @@ class SVM(baseAI.BaseAIModel):
         Make predictions using the trained model.
         """
         return self.model.predict(X)
+
     def ModelSelection(self,X_train,y_train):
         param_grid= {
             "C": [0.1,1,10],
@@ -113,11 +112,10 @@ class SVM(baseAI.BaseAIModel):
         grid.fit(X_train,y_train)
         print("Best Parameters:", grid.best_params_)
 
-
     def Run(self , HyperParamater = False ):
         try:
             X_train, X_test, y_train, y_test = self.Preprocess()
-            self.model = SVC(kernel=self.__kernel)
+            #self.model = SVC(kernel=self.__kernel)
             self.train(X_train, y_train)
             self.evaluate(X_test,y_test)
             if HyperParamater == True:
@@ -125,3 +123,31 @@ class SVM(baseAI.BaseAIModel):
 
         except Exception as e:
             print(F"Error Occured {e}")
+
+
+"""
+How would you preprocess OHLC data for stock price prediction using SVM?
+
+What features would you engineer?
+How do you evaluate the performance of an SVM model?
+
+Discuss classification metrics (accuracy, F1, precision, recall) and regression metrics (RMSE, MAE).
+How does scaling of features impact SVM performance?
+
+Why is it important to standardize or normalize data before training?
+How would you handle a dataset with 1 million samples using SVM?
+
+Discuss techniques like linear SVM, kernel approximation, or subsampling.
+Explain how you would tune hyperparameters of an SVM model.
+
+What is GridSearchCV, and how would you optimize parameters like C and gamma?
+How would you implement an SVM for anomaly detection?
+
+Discuss the One-Class SVM algorithm.
+How does SVM compare to other algorithms like Logistic Regression or Random Forest?
+
+When would you choose SVM over these algorithms?
+
+
+
+"""

@@ -1,5 +1,6 @@
 import DataGenerator.OHLCGenerator as Fd  #finance data
 import SVM
+import RandomForest as rf
 
 
 def ConsoleModel(df):
@@ -8,13 +9,17 @@ def ConsoleModel(df):
 
         print("Select Model")
         print("Press 1 : SVM with Different Kernel Tick")
-        print("Press  : SVM")
+        print("Press  2 : Random Forest")
 
         algorithmMapping = int(input())
         if algorithmMapping==1:
             print("Selected SVM Model..")
             svm_model = SVM.SVM(df,kernel=SVM.KernelFunc.LINEAR)
             svm_model.Run(HyperParamater= True)
+
+        elif  algorithmMapping==2:
+            print("Selected Random Forest Model..")
+            rand_forest = rf.RandomForest(df)
 
     except Exception as e:
         print(F"Error Occured..{e}")
