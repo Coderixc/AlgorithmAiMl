@@ -20,6 +20,7 @@ def ConsoleModel(df):
         elif  algorithmMapping==2:
             print("Selected Random Forest Model..")
             rand_forest = rf.RandomForest(df)
+            rand_forest.Run()
 
     except Exception as e:
         print(F"Error Occured..{e}")

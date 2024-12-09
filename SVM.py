@@ -46,7 +46,7 @@ class SVM(baseAI.BaseAIModel):
             self.__kernel = KernelFunc.POLY
         elif kernel == KernelFunc.PRECOMPUTED:
             self.__kernel = KernelFunc.PRECOMPUTED
-
+        self.model = SVC(kernel=self.__kernel)
     def Preprocess(self):
         """
         Preprocess the injected dataframe to create features and Target
@@ -115,7 +115,7 @@ class SVM(baseAI.BaseAIModel):
     def Run(self , HyperParamater = False ):
         try:
             X_train, X_test, y_train, y_test = self.Preprocess()
-            #self.model = SVC(kernel=self.__kernel)
+
             self.train(X_train, y_train)
             self.evaluate(X_test,y_test)
             if HyperParamater == True:
