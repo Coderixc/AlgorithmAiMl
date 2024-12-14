@@ -13,3 +13,7 @@ class BaseAIModel(ABC):
     @abstractmethod
     def predictModel(self, X_train, y_train):
         pass
+
+    @abstractmethod
+    def modeltunning(self,X_train, y_train):
+        pass

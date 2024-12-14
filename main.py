@@ -6,7 +6,6 @@ import RandomForest as rf
 def ConsoleModel(df):
     try:
         #__prompt="Chosse Model"
-
         print("Select Model")
         print("Press 1 : SVM with Different Kernel Tick")
         print("Press  2 : Random Forest")
@@ -20,7 +19,7 @@ def ConsoleModel(df):
         elif  algorithmMapping==2:
             print("Selected Random Forest Model..")
             rand_forest = rf.RandomForest(df)
-            rand_forest.Run()
+            rand_forest.Run(HyperParamater= True)
 
     except Exception as e:
         print(F"Error Occured..{e}")
@@ -34,6 +33,3 @@ if __name__ == '__main__':
     ConsoleModel(stock_gen.GetOHLCData())
 
 
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/

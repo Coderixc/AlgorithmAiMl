@@ -5,12 +5,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier , RandomForestRegressor
 from sklearn.metrics import accuracy_score, mean_squared_error
 
+from sklearn.model_selection import GridSearchCV
+
 class RandomForest(baseAI.BaseAIModel):
 
     def __init__(self, df_OHLC: pd.DataFrame):
         if not isinstance(df_OHLC,pd.DataFrame) :
             raise TypeError(F"Input 'df' must be a pandas DataFrame.")
-        print("cjeck")
+        #print("cjeck")
 
         self.df= df_OHLC
         print(F" {len(self.df)}")
@@ -38,7 +40,6 @@ class RandomForest(baseAI.BaseAIModel):
             return train_test_split(X, y_class, test_size=0.2, random_state=42)
 
 
-
         except Exception as e:
             print(F"Error Ocurred while process random forest {e}")
 
@@ -59,12 +60,32 @@ class RandomForest(baseAI.BaseAIModel):
             print(f"Model RMSE: {rmse:.2f}")
             return rmse
 
-
     def predictModel(self,X):
         return self.model.predict(X)
 
-    def Run(self):
-        X_train, X_test, y_train, y_test = self.preprocess()
+    def modeltunning(self,X_train, y_train):
+        """ Test Molde with all possibilities """
+        print("Testing and tuning all hyper parameters")
+        try:
+            param_grid = {
+                'n_estimators': [100, 200, 500],
+                'max_depth': [5, 10, 20, None],
+                'min_samples_split': [2, 5, 10],
+                'min_samples_leaf': [1, 2, 4],
+                'max_features': ['sqrt', 'log2', None]
+            }
+            grid_search = GridSearchCV(RandomForestClassifier(), param_grid, cv=5, scoring='accuracy', n_jobs=-1,verbose=2)
+            print("training model")
+            grid_search.fit(X_train, y_train)
+            print("Best Parameters:", grid_search.best_params_)
 
+        except Exception as e:
+            print(F"Error Generated while tuning all combinations :{e}")
+
+    def Run(self ,HyperParamater = False):
+        X_train, X_test, y_train, y_test = self.preprocess()
         self.train(X_train, y_train)
         self.evaluate(X_test, y_test)
+
+        if HyperParamater == True:
+            self.modeltunning(X_train, y_train)

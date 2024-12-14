@@ -102,7 +102,7 @@ class SVM(baseAI.BaseAIModel):
         """
         return self.model.predict(X)
 
-    def ModelSelection(self,X_train,y_train):
+    def ModelTunning(self,X_train,y_train):
         param_grid= {
             "C": [0.1,1,10],
             'gamma': [1,0.1,0.01],
