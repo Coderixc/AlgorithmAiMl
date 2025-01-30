@@ -38,6 +38,7 @@ class KNNModel(BaseAIModel):
     def load_data(self):
         X_train, X_test , y_train,y_test =None,None,None,None
 
+
         # Decide features from entire data
         features = ['Open', 'High', 'Low', 'Close']
         X = self.df[features]
